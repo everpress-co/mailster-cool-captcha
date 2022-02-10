@@ -5,8 +5,6 @@ Requires at least: 3.8
 Tested up to: 5.9
 Stable tag: 1.2
 License: GPLv2 or later
-Author: EverPress
-Author URI: https://everprees.co
 
 == Description ==
 
