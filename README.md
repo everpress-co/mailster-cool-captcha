@@ -21,6 +21,10 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to Settings => Newsletter => Cool Captcha and configure the plugin
 
+## Screenshots
+
+Option Interface
+
 ## Changelog
 
 ### 1.2
