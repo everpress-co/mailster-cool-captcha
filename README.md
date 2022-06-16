@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: mailster, form, forms, recaptcha, captcha, secure  
 Requires at least: 3.8  
 Tested up to: 6.0  
-Stable tag: 1.2  
+Stable tag: 1.3  
 License: GPLv2 or later
 
 ## Description
@@ -23,9 +23,16 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 
 ## Screenshots
 
-Option Interface
+### 1. Option Interface
+
+![Option Interface](https://ps.w.org/mailster-cool-captcha/assets/screenshot-1.png)
+
 
 ## Changelog
+
+### 1.3
+
+-   escaping of html string in the admin
 
 ### 1.2
 

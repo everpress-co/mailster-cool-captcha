@@ -11,7 +11,6 @@ class MailsterCoolCaptcha {
 		$this->plugin_url  = plugin_dir_url( MAILSTER_COOLCAPTCHA_FILE );
 
 		register_activation_hook( MAILSTER_COOLCAPTCHA_FILE, array( &$this, 'activate' ) );
-		register_deactivation_hook( MAILSTER_COOLCAPTCHA_FILE, array( &$this, 'deactivate' ) );
 
 		load_plugin_textdomain( 'mailster-coolcaptcha' );
 
@@ -52,10 +51,6 @@ class MailsterCoolCaptcha {
 
 	}
 
-	public function deactivate( $network_wide ) {
-
-	}
-
 	public function init() {
 
 		if ( is_admin() ) {
@@ -65,8 +60,8 @@ class MailsterCoolCaptcha {
 			add_action( 'mailster_section_tab_coolcaptcha', array( &$this, 'settings' ) );
 
 		}
-		add_filter( 'mailster_form_fields', array( &$this, 'form_fields' ), 10, 3 );
 
+		add_filter( 'mailster_form_fields', array( &$this, 'form_fields' ), 10, 3 );
 		add_filter( 'mailster_submit_errors', array( &$this, 'check_captcha_v1' ), 10, 1 );
 		add_filter( 'mailster_submit', array( &$this, 'check_captcha' ), 10, 1 );
 		add_action( 'wp_ajax_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
@@ -89,24 +84,24 @@ class MailsterCoolCaptcha {
 		?>
 	<table class="form-table">
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Error Message', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Error Message', 'mailster-coolcaptcha' ); ?></th>
 			<td><p><input type="text" name="mailster_options[coolcaptcha_error_msg]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_error_msg' ) ); ?>" class="large-text"></p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Form Label', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Form Label', 'mailster-coolcaptcha' ); ?></th>
 			<td><p><input type="text" name="mailster_options[coolcaptcha_formlabel]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_formlabel' ) ); ?>" class="large-text"></p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Disable for logged in users', 'mailster-coolcaptcha' ); ?></th>
-			<td><label><input type="hidden" name="mailster_options[coolcaptcha_loggedin]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_loggedin]" value="1" <?php checked( mailster_option( 'coolcaptcha_loggedin' ) ); ?>> <?php _e( 'disable the captcha for logged in users', 'mailster-coolcaptcha' ); ?></label></td>
+			<th scope="row"><?php esc_html_e( 'Disable for logged in users', 'mailster-coolcaptcha' ); ?></th>
+			<td><label><input type="hidden" name="mailster_options[coolcaptcha_loggedin]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_loggedin]" value="1" <?php checked( mailster_option( 'coolcaptcha_loggedin' ) ); ?>> <?php esc_html_e( 'disable the captcha for logged in users', 'mailster-coolcaptcha' ); ?></label></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Forms', 'mailster-coolcaptcha' ); ?><p class="description"><?php _e( 'select forms which require a captcha', 'mailster-coolcaptcha' ); ?></p></th>
+			<th scope="row"><?php esc_html_e( 'Forms', 'mailster-coolcaptcha' ); ?><p class="description"><?php esc_html_e( 'select forms which require a captcha', 'mailster-coolcaptcha' ); ?></p></th>
 			<td>
 				<ul>
 				<?php
-				$forms       = mailster( 'forms' )->get_all();
-					$enabled = mailster_option( 'coolcaptcha_forms', array() );
+				$forms   = mailster( 'forms' )->get_all();
+				$enabled = mailster_option( 'coolcaptcha_forms', array() );
 				foreach ( $forms as $form ) {
 					$form = (object) $form;
 					$id   = isset( $form->ID ) ? $form->ID : $form->id;
@@ -118,8 +113,8 @@ class MailsterCoolCaptcha {
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Preview', 'mailster-coolcaptcha' ); ?>
-			<p class="description"><?php _e( 'you have to save the settings to update the preview!', 'mailster-coolcaptcha' ); ?></p></th>
+			<th scope="row"><?php esc_html_e( 'Preview', 'mailster-coolcaptcha' ); ?>
+			<p class="description"><?php esc_html_e( 'you have to save the settings to update the preview!', 'mailster-coolcaptcha' ); ?></p></th>
 			<td>
 				<?php
 				printf(
@@ -136,7 +131,7 @@ class MailsterCoolCaptcha {
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Image Format', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Image Format', 'mailster-coolcaptcha' ); ?></th>
 			<td><select name="mailster_options[coolcaptcha_format]">
 				<?php
 				$themes      = array(
@@ -152,7 +147,7 @@ class MailsterCoolCaptcha {
 			</select></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Quality', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Quality', 'mailster-coolcaptcha' ); ?></th>
 			<td><select name="mailster_options[coolcaptcha_quality]">
 				<?php
 				$themes      = array(
@@ -169,34 +164,34 @@ class MailsterCoolCaptcha {
 			</select></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Dimensions', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Dimensions', 'mailster-coolcaptcha' ); ?></th>
 			<td><p><input type="text" name="mailster_options[coolcaptcha_width]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_width', 200 ) ); ?>" class="small-text"> &times; <input type="text" name="mailster_options[coolcaptcha_height]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_height' ) ); ?>" class="small-text"> px</p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Blur', 'mailster-coolcaptcha' ); ?></th>
-			<td><label><input type="hidden" name="mailster_options[coolcaptcha_blur]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_blur]" value="1" <?php checked( mailster_option( 'coolcaptcha_blur' ) ); ?>> <?php _e( 'use blur', 'mailster-coolcaptcha' ); ?></label></td>
+			<th scope="row"><?php esc_html_e( 'Blur', 'mailster-coolcaptcha' ); ?></th>
+			<td><label><input type="hidden" name="mailster_options[coolcaptcha_blur]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_blur]" value="1" <?php checked( mailster_option( 'coolcaptcha_blur' ) ); ?>> <?php esc_html_e( 'use blur', 'mailster-coolcaptcha' ); ?></label></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Line', 'mailster-coolcaptcha' ); ?></th>
-			<td><label><input type="hidden" name="mailster_options[coolcaptcha_line]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_line]" value="1" <?php checked( mailster_option( 'coolcaptcha_line' ) ); ?>> <?php _e( 'strike out the text', 'mailster-coolcaptcha' ); ?></label></td>
+			<th scope="row"><?php esc_html_e( 'Line', 'mailster-coolcaptcha' ); ?></th>
+			<td><label><input type="hidden" name="mailster_options[coolcaptcha_line]" value=""><input type="checkbox" name="mailster_options[coolcaptcha_line]" value="1" <?php checked( mailster_option( 'coolcaptcha_line' ) ); ?>> <?php esc_html_e( 'strike out the text', 'mailster-coolcaptcha' ); ?></label></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Word length', 'mailster-coolcaptcha' ); ?></th>
-			<td><p><?php _e( 'use at least', 'mailster-coolcaptcha' ); ?> <input type="text" name="mailster_options[coolcaptcha_min]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_min' ) ); ?>" class="small-text"> <?php _e( 'letters per word but max', 'mailster-coolcaptcha' ); ?> <input type="text" name="mailster_options[coolcaptcha_max]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_max' ) ); ?>" class="small-text"></p></td>
+			<th scope="row"><?php esc_html_e( 'Word length', 'mailster-coolcaptcha' ); ?></th>
+			<td><p><?php esc_html_e( 'use at least', 'mailster-coolcaptcha' ); ?> <input type="text" name="mailster_options[coolcaptcha_min]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_min' ) ); ?>" class="small-text"> <?php esc_html_e( 'letters per word but max', 'mailster-coolcaptcha' ); ?> <input type="text" name="mailster_options[coolcaptcha_max]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_max' ) ); ?>" class="small-text"></p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Wave configuration', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Wave configuration', 'mailster-coolcaptcha' ); ?></th>
 			<td><p>Y-period: <input type="text" name="mailster_options[coolcaptcha_yp]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_yp' ) ); ?>" class="small-text">
 				Y-amplitude: <input type="text" name="mailster_options[coolcaptcha_ya]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_ya' ) ); ?>" class="small-text">
 				X-period: <input type="text" name="mailster_options[coolcaptcha_xp]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_xp' ) ); ?>" class="small-text">
 				X-amplitude: <input type="text" name="mailster_options[coolcaptcha_xa]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_xa' ) ); ?>" class="small-text"> </p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Max. rotation', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Max. rotation', 'mailster-coolcaptcha' ); ?></th>
 			<td><p><input type="text" name="mailster_options[coolcaptcha_rot]" value="<?php echo esc_attr( mailster_option( 'coolcaptcha_rot' ) ); ?>" class="small-text"></p></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Language', 'mailster-coolcaptcha' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Language', 'mailster-coolcaptcha' ); ?></th>
 			<td><select name="mailster_options[coolcaptcha_language]">
 				<?php
 				$languages   = array(
