@@ -23,7 +23,7 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 
 ## Screenshots
 
-Option Interface
+1. Option Interface
 
 ## Changelog
 
