@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Mailster Cool Captcha
-Plugin URI: https://mailster.co/?utm_campaign=wporg&utm_source=Mailster+Cool+Captcha+for+Forms&utm_medium=plugin
+Plugin URI: https://mailster.co/?utm_campaign=wporg&utm_source=wordpress.org&utm_medium=plugin&utm_term=Cool+Captcha
 Description: Adds a Cool Captcha to your Mailster subscription forms
 Version: 1.3
 Author: EverPress
