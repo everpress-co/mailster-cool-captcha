@@ -1,10 +1,10 @@
 # Mailster Cool Captcha
 
-Contributors: everpress, xaverb  
+Contributors: everpress, mailster, xaverb  
 Tags: mailster, form, forms, recaptcha, captcha, secure  
-Requires at least: 3.8  
-Tested up to: 6.0  
-Stable tag: 1.3  
+Requires at least: 6.0  
+Tested up to: 6.5  
+Stable tag: 1.3.1  
 License: GPLv2 or later
 
 ## Description
@@ -29,22 +29,26 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 
 ## Changelog
 
+### 1.3.1
+
+- updated tested up to and required version
+
 ### 1.3
 
--   escaping of html string in the admin
+- escaping of html string in the admin
 
 ### 1.2
 
--   fixed: Captcha is now below email address on unsubscribe page
+- fixed: Captcha is now below email address on unsubscribe page
 
 ### 1.1
 
--   removed deprecated functions
--   fixed position if GDPR check box is enabled.
+- removed deprecated functions
+- fixed position if GDPR check box is enabled.
 
 ### 1.0
 
--   initial release
+- initial release
 
 ## Additional Info
 
