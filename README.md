@@ -29,6 +29,8 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 
 ## Changelog
 
+### Unreleased
+
 ### 1.3.1
 
 - updated tested up to and required version
