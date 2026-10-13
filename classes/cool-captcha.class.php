@@ -64,51 +64,9 @@ class MailsterCoolCaptcha {
 		add_filter( 'mailster_form_fields', array( &$this, 'form_fields' ), 10, 3 );
 		add_filter( 'mailster_submit_errors', array( &$this, 'check_captcha_v1' ), 10, 1 );
 		add_filter( 'mailster_submit', array( &$this, 'check_captcha' ), 10, 1 );
-		add_action( 'rest_api_init', array( &$this, 'register_rest_routes' ) );
+		add_action( 'wp_ajax_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
+		add_action( 'wp_ajax_nopriv_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
 
-	}
-
-	/**
-	 * Register REST API routes.
-	 *
-	 * @since [Unreleased]
-	 */
-	public function register_rest_routes() {
-
-		register_rest_route(
-			'mailster-coolcaptcha/v1',
-			'/image',
-			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( &$this, 'rest_coolcaptcha_img' ),
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'formid'   => array(
-						'type'              => 'integer',
-						'default'           => 0,
-						'sanitize_callback' => 'absint',
-					),
-					'nocache'  => array(
-						'type'              => 'integer',
-						'default'           => 0,
-						'sanitize_callback' => 'absint',
-					),
-				),
-			)
-		);
-	}
-
-	/**
-	 * REST callback for captcha image output.
-	 *
-	 * @since [Unreleased]
-	 *
-	 * @param WP_REST_Request $request Request object.
-	 */
-	public function rest_coolcaptcha_img( $request ) {
-
-		$formid = (int) $request->get_param( 'formid' );
-		$this->output_coolcaptcha_img( $formid );
 	}
 
 	/**
@@ -123,10 +81,11 @@ class MailsterCoolCaptcha {
 
 		return add_query_arg(
 			array(
+				'action'  => 'mailster_coolcaptcha_img',
 				'formid'  => (int) $formid,
 				'nocache' => time(),
 			),
-			rest_url( 'mailster-coolcaptcha/v1/image' )
+			admin_url( 'admin-ajax.php' )
 		);
 	}
 
@@ -288,19 +247,17 @@ class MailsterCoolCaptcha {
 	}
 
 	/**
-	 * Output captcha image and exit.
+	 * AJAX handler: output captcha image and exit.
 	 *
 	 * @since [Unreleased]
-	 *
-	 * @param int $formid Form ID.
 	 */
-	private function output_coolcaptcha_img( $formid = 0 ) {
+	public function coolcaptcha_img() {
 
 		if ( ! session_id() ) {
 			session_start();
 		}
 
-		$formid = (int) $formid;
+		$formid = isset( $_GET['formid'] ) ? intval( $_GET['formid'] ) : 0;
 
 		require_once $this->plugin_path . 'captcha/captcha.php';
 		$captcha = new SimpleCaptcha();
