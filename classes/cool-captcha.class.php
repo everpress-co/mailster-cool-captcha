@@ -64,9 +64,70 @@ class MailsterCoolCaptcha {
 		add_filter( 'mailster_form_fields', array( &$this, 'form_fields' ), 10, 3 );
 		add_filter( 'mailster_submit_errors', array( &$this, 'check_captcha_v1' ), 10, 1 );
 		add_filter( 'mailster_submit', array( &$this, 'check_captcha' ), 10, 1 );
-		add_action( 'wp_ajax_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
-		add_action( 'wp_ajax_nopriv_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
+		add_action( 'rest_api_init', array( &$this, 'register_rest_routes' ) );
 
+	}
+
+	/**
+	 * Register REST API routes.
+	 *
+	 * @since [Unreleased]
+	 */
+	public function register_rest_routes() {
+
+		register_rest_route(
+			'mailster-coolcaptcha/v1',
+			'/image',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( &$this, 'rest_coolcaptcha_img' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'formid'   => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'nocache'  => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * REST callback for captcha image output.
+	 *
+	 * @since [Unreleased]
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 */
+	public function rest_coolcaptcha_img( $request ) {
+
+		$formid = (int) $request->get_param( 'formid' );
+		$this->output_coolcaptcha_img( $formid );
+	}
+
+	/**
+	 * Build captcha image URL.
+	 *
+	 * @since [Unreleased]
+	 *
+	 * @param int $formid Form ID.
+	 * @return string
+	 */
+	public function get_image_url( $formid = 0 ) {
+
+		return add_query_arg(
+			array(
+				'formid'  => (int) $formid,
+				'nocache' => time(),
+			),
+			rest_url( 'mailster-coolcaptcha/v1/image' )
+		);
 	}
 
 	public function settings_tab( $settings ) {
@@ -119,13 +180,7 @@ class MailsterCoolCaptcha {
 				<?php
 				printf(
 					'<br><img src="%s" width="' . mailster_option( 'coolcaptcha_width' ) . '" height="' . mailster_option( 'coolcaptcha_height', 70 ) . '" style="border:1px solid #ccc">',
-					add_query_arg(
-						array(
-							'action'  => 'mailster_coolcaptcha_img',
-							'nocache' => time(),
-						),
-						admin_url( 'admin-ajax.php' )
-					)
+					esc_url( $this->get_image_url( 0 ) )
 				);
 				?>
 			</td>
@@ -232,13 +287,20 @@ class MailsterCoolCaptcha {
 
 	}
 
-	public function coolcaptcha_img() {
+	/**
+	 * Output captcha image and exit.
+	 *
+	 * @since [Unreleased]
+	 *
+	 * @param int $formid Form ID.
+	 */
+	private function output_coolcaptcha_img( $formid = 0 ) {
 
 		if ( ! session_id() ) {
 			session_start();
 		}
 
-		$formid = ( isset( $_GET['formid'] ) ) ? intval( $_GET['formid'] ) : 0;
+		$formid = (int) $formid;
 
 		require_once $this->plugin_path . 'captcha/captcha.php';
 		$captcha = new SimpleCaptcha();
@@ -285,15 +347,8 @@ class MailsterCoolCaptcha {
 			$html .= '<label for="mailster-_coolcaptcha-' . $formid . '">' . $label . '</label>';
 		}
 		$img = sprintf(
-			'<div class="mailster-coolcaptcha-wrap"><img title="' . __( 'click to reload', 'mailster-coolcaptcha' ) . '" onclick="var s=this.src;this.src=s.replace(/nocache=\d+/, \'nocache=\'+(+new Date()))" src="%s" style="cursor:pointer;width:%dpx;height:%dpx"></div>',
-			add_query_arg(
-				array(
-					'action'  => 'mailster_coolcaptcha_img',
-					'nocache' => time(),
-					'formid'  => $formid,
-				),
-				admin_url( 'admin-ajax.php' )
-			),
+			'<div class="mailster-coolcaptcha-wrap"><img title="' . esc_attr__( 'click to reload', 'mailster-coolcaptcha' ) . '" onclick="var s=this.src;this.src=s.replace(/nocache=\d+/, \'nocache=\'+(+new Date()))" src="%s" style="cursor:pointer;width:%dpx;height:%dpx"></div>',
+			esc_url( $this->get_image_url( $formid ) ),
 			$width,
 			$height
 		);

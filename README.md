@@ -31,6 +31,9 @@ You may also try [Mailster reCaptcha™ for Forms](https://wordpress.org/plugins
 
 ### Unreleased
 
+- fixed: captcha image broken on PHP 8.1+ due to deprecation notices in the image generator
+- changed: captcha image served via REST instead of admin-ajax
+
 ### 1.3.1
 
 - updated tested up to and required version
