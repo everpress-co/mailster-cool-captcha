@@ -31,6 +31,7 @@
 	"scripts": {
 		"lint": "npm run lint:pkg-json",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip"
 	}
 }
