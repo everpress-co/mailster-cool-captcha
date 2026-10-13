@@ -147,6 +147,16 @@ class SimpleCaptcha {
 	/** GD image */
 	public $im;
 
+	/** GD allocated colors */
+	public $GdBgColor;
+
+	public $GdFgColor;
+
+	public $GdShadowColor;
+
+	/** Final X position after text rendering */
+	public $textFinalX;
+
 
 
 
@@ -330,8 +340,9 @@ class SimpleCaptcha {
 		if ( ! $length ) {
 			return false;
 		}
-		$line = rand( 1, ( filesize( $wordsfile ) / $length ) - 2 );
-		if ( fseek( $fp, $length * $line ) == -1 ) {
+		$max_line = (int) max( 1, floor( filesize( $wordsfile ) / $length ) - 2 );
+		$line     = rand( 1, $max_line );
+		if ( fseek( $fp, (int) ( $length * $line ) ) == -1 ) {
 			return false;
 		}
 		$text = trim( fgets( $fp ) );
@@ -371,7 +382,7 @@ class SimpleCaptcha {
 		$width = $this->lineWidth / 2 * $this->scale;
 
 		for ( $i = $width * -1; $i <= $width; $i++ ) {
-			imageline( $this->im, $x1, $y1 + $i, $x2, $y2 + $i, $this->GdFgColor );
+			imageline( $this->im, (int) round( $x1 ), (int) round( $y1 + $i ), (int) round( $x2 ), (int) round( $y2 + $i ), $this->GdFgColor );
 		}
 	}
 
@@ -406,10 +417,10 @@ class SimpleCaptcha {
 			if ( $this->shadowColor ) {
 				$coords = imagettftext(
 					$this->im,
-					$fontsize,
+					(int) round( $fontsize ),
 					$degree,
-					$x + $this->scale,
-					$y + $this->scale,
+					(int) round( $x + $this->scale ),
+					(int) round( $y + $this->scale ),
 					$this->GdShadowColor,
 					$fontfile,
 					$letter
@@ -417,10 +428,10 @@ class SimpleCaptcha {
 			}
 			$coords = imagettftext(
 				$this->im,
-				$fontsize,
+				(int) round( $fontsize ),
 				$degree,
-				$x,
-				$y,
+				(int) round( $x ),
+				(int) round( $y ),
 				$this->GdFgColor,
 				$fontfile,
 				$letter
@@ -445,7 +456,7 @@ class SimpleCaptcha {
 				$this->im,
 				$this->im,
 				$i - 1,
-				sin( $k + $i / $xp ) * ( $this->scale * $this->Xamplitude ),
+				(int) round( sin( $k + $i / $xp ) * ( $this->scale * $this->Xamplitude ) ),
 				$i,
 				0,
 				1,
@@ -460,7 +471,7 @@ class SimpleCaptcha {
 			imagecopy(
 				$this->im,
 				$this->im,
-				sin( $k + $i / $yp ) * ( $this->scale * $this->Yamplitude ),
+				(int) round( sin( $k + $i / $yp ) * ( $this->scale * $this->Yamplitude ) ),
 				$i - 1,
 				0,
 				$i,

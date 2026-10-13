@@ -69,6 +69,26 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * Build captcha image URL.
+	 *
+	 * @since [Unreleased]
+	 *
+	 * @param int $formid Form ID.
+	 * @return string
+	 */
+	public function get_image_url( $formid = 0 ) {
+
+		return add_query_arg(
+			array(
+				'action'  => 'mailster_coolcaptcha_img',
+				'formid'  => (int) $formid,
+				'nocache' => time(),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+	}
+
 	public function settings_tab( $settings ) {
 
 		$position = 4;
@@ -119,13 +139,7 @@ class MailsterCoolCaptcha {
 				<?php
 				printf(
 					'<br><img src="%s" width="' . mailster_option( 'coolcaptcha_width' ) . '" height="' . mailster_option( 'coolcaptcha_height', 70 ) . '" style="border:1px solid #ccc">',
-					add_query_arg(
-						array(
-							'action'  => 'mailster_coolcaptcha_img',
-							'nocache' => time(),
-						),
-						admin_url( 'admin-ajax.php' )
-					)
+					esc_url( $this->get_image_url( 0 ) )
 				);
 				?>
 			</td>
@@ -232,13 +246,18 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * AJAX handler: output captcha image and exit.
+	 *
+	 * @since [Unreleased]
+	 */
 	public function coolcaptcha_img() {
 
 		if ( ! session_id() ) {
 			session_start();
 		}
 
-		$formid = ( isset( $_GET['formid'] ) ) ? intval( $_GET['formid'] ) : 0;
+		$formid = isset( $_GET['formid'] ) ? intval( $_GET['formid'] ) : 0;
 
 		require_once $this->plugin_path . 'captcha/captcha.php';
 		$captcha = new SimpleCaptcha();
@@ -285,15 +304,8 @@ class MailsterCoolCaptcha {
 			$html .= '<label for="mailster-_coolcaptcha-' . $formid . '">' . $label . '</label>';
 		}
 		$img = sprintf(
-			'<div class="mailster-coolcaptcha-wrap"><img title="' . __( 'click to reload', 'mailster-coolcaptcha' ) . '" onclick="var s=this.src;this.src=s.replace(/nocache=\d+/, \'nocache=\'+(+new Date()))" src="%s" style="cursor:pointer;width:%dpx;height:%dpx"></div>',
-			add_query_arg(
-				array(
-					'action'  => 'mailster_coolcaptcha_img',
-					'nocache' => time(),
-					'formid'  => $formid,
-				),
-				admin_url( 'admin-ajax.php' )
-			),
+			'<div class="mailster-coolcaptcha-wrap"><img title="' . esc_attr__( 'click to reload', 'mailster-coolcaptcha' ) . '" onclick="var s=this.src;this.src=s.replace(/nocache=\d+/, \'nocache=\'+(+new Date()))" src="%s" style="cursor:pointer;width:%dpx;height:%dpx"></div>',
+			esc_url( $this->get_image_url( $formid ) ),
 			$width,
 			$height
 		);
