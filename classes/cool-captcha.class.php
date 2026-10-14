@@ -1,4 +1,9 @@
 <?php
+/**
+ * Mailster Cool Captcha integration class.
+ *
+ * @package Mailster_Cool_Captcha
+ */
 
 /**
  * Integrates Cool Captcha with Mailster forms and settings.
@@ -50,7 +55,7 @@ class MailsterCoolCaptcha {
 	 * @param bool $network_wide Whether the plugin is network-activated.
 	 * @return void
 	 */
-	public function activate( $network_wide ) {
+	public function activate( $network_wide ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Hook signature.
 
 		if ( function_exists( 'mailster' ) ) {
 
@@ -81,7 +86,6 @@ class MailsterCoolCaptcha {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -106,7 +110,6 @@ class MailsterCoolCaptcha {
 		add_filter( 'mailster_submit', array( &$this, 'check_captcha' ), 10, 1 );
 		add_action( 'wp_ajax_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
 		add_action( 'wp_ajax_nopriv_mailster_coolcaptcha_img', array( &$this, 'coolcaptcha_img' ) );
-
 	}
 
 	/**
@@ -180,7 +183,12 @@ class MailsterCoolCaptcha {
 				foreach ( $forms as $form ) {
 					$form = (object) $form;
 					$id   = isset( $form->ID ) ? $form->ID : $form->id;
-					echo '<li><label><input name="mailster_options[coolcaptcha_forms][]" type="checkbox" value="' . $id . '" ' . ( checked( in_array( $id, $enabled ), true, false ) ) . '>' . $form->name . '</label></li>';
+					printf(
+						'<li><label><input name="mailster_options[coolcaptcha_forms][]" type="checkbox" value="%1$s" %2$s>%3$s</label></li>',
+						esc_attr( $id ),
+						checked( in_array( $id, $enabled, true ), true, false ),
+						esc_html( $form->name )
+					);
 				}
 
 				?>
@@ -193,8 +201,10 @@ class MailsterCoolCaptcha {
 			<td>
 				<?php
 				printf(
-					'<br><img src="%s" width="' . mailster_option( 'coolcaptcha_width' ) . '" height="' . mailster_option( 'coolcaptcha_height', 70 ) . '" style="border:1px solid #ccc">',
-					esc_url( $this->get_image_url( 0 ) )
+					'<br><img src="%1$s" width="%2$s" height="%3$s" style="border:1px solid #ccc">',
+					esc_url( $this->get_image_url( 0 ) ),
+					esc_attr( mailster_option( 'coolcaptcha_width' ) ),
+					esc_attr( mailster_option( 'coolcaptcha_height', 70 ) )
 				);
 				?>
 			</td>
@@ -209,7 +219,12 @@ class MailsterCoolCaptcha {
 				);
 					$current = mailster_option( 'coolcaptcha_format' );
 				foreach ( $themes as $key => $name ) {
-					echo '<option value="' . $key . '" ' . ( selected( $key, $current, false ) ) . '>' . $name . '</option>';
+					printf(
+						'<option value="%1$s" %2$s>%3$s</option>',
+						esc_attr( $key ),
+						selected( $key, $current, false ),
+						esc_html( $name )
+					);
 				}
 
 				?>
@@ -226,7 +241,12 @@ class MailsterCoolCaptcha {
 				);
 					$current = mailster_option( 'coolcaptcha_quality' );
 				foreach ( $themes as $key => $name ) {
-					echo '<option value="' . $key . '" ' . ( selected( $key, $current, false ) ) . '>' . $name . '</option>';
+					printf(
+						'<option value="%1$s" %2$s>%3$s</option>',
+						esc_attr( $key ),
+						selected( $key, $current, false ),
+						esc_html( $name )
+					);
 				}
 
 				?>
@@ -269,7 +289,12 @@ class MailsterCoolCaptcha {
 				);
 					$current = mailster_option( 'coolcaptcha_language' );
 				foreach ( $languages as $key => $name ) {
-					echo '<option value="' . $key . '" ' . ( selected( $key, $current, false ) ) . '>' . $name . '</option>';
+					printf(
+						'<option value="%1$s" %2$s>%3$s</option>',
+						esc_attr( $key ),
+						selected( $key, $current, false ),
+						esc_html( $name )
+					);
 				}
 
 				?>
@@ -296,7 +321,7 @@ class MailsterCoolCaptcha {
 			return $fields;
 		}
 
-		if ( ! in_array( $formid, mailster_option( 'coolcaptcha_forms', array() ) ) ) {
+		if ( ! in_array( (int) $formid, array_map( 'intval', (array) mailster_option( 'coolcaptcha_forms', array() ) ), true ) ) {
 			return $fields;
 		}
 
@@ -308,7 +333,6 @@ class MailsterCoolCaptcha {
 					array_slice( $fields, $position, null, true );
 
 		return $fields;
-
 	}
 
 	/**
@@ -324,11 +348,13 @@ class MailsterCoolCaptcha {
 			session_start();
 		}
 
-		$formid = isset( $_GET['formid'] ) ? intval( $_GET['formid'] ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public captcha image endpoint.
+		$formid = isset( $_GET['formid'] ) ? absint( wp_unslash( $_GET['formid'] ) ) : 0;
 
 		require_once $this->plugin_path . 'captcha/captcha.php';
 		$captcha = new SimpleCaptcha();
 
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- SimpleCaptcha API.
 		$captcha->resourcesPath = $this->plugin_path . 'captcha';
 		$captcha->wordsFile     = 'words/' . mailster_option( 'coolcaptcha_language' ) . '.php';
 		$captcha->session_var   = 'mailster_coolcaptcha_' . $formid;
@@ -351,10 +377,10 @@ class MailsterCoolCaptcha {
 		$captcha->Yamplitude = intval( mailster_option( 'coolcaptcha_ya' ) );
 		$captcha->Xperiod    = intval( mailster_option( 'coolcaptcha_xp' ) );
 		$captcha->Xamplitude = intval( mailster_option( 'coolcaptcha_xa' ) );
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		$captcha->CreateImage();
 		exit;
-
 	}
 
 	/**
@@ -394,7 +420,6 @@ class MailsterCoolCaptcha {
 		$html .= '</div>';
 
 		return $html;
-
 	}
 
 	/**
@@ -402,35 +427,29 @@ class MailsterCoolCaptcha {
 	 *
 	 * @since 1.0
 	 *
-	 * @param array $object Submit data including errors array.
+	 * @param array $submission Submit data including errors array.
 	 * @return array Submit data with captcha error when validation fails.
 	 */
-	public function check_captcha( $object ) {
+	public function check_captcha( $submission ) {
 
 		if ( is_user_logged_in() && mailster_option( 'coolcaptcha_loggedin' ) ) {
-			return $object;
+			return $submission;
 		}
 
-		$formid = ( isset( $_POST['formid'] ) ) ? intval( $_POST['formid'] ) : 0;
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified by Mailster form submit handler.
+		$formid = isset( $_POST['formid'] ) ? absint( wp_unslash( $_POST['formid'] ) ) : 0;
 
-		if ( ! in_array( $formid, mailster_option( 'coolcaptcha_forms', array() ) ) ) {
-			return $object;
+		if ( ! in_array( $formid, array_map( 'intval', (array) mailster_option( 'coolcaptcha_forms', array() ) ), true ) ) {
+			// phpcs:enable WordPress.Security.NonceVerification.Missing
+			return $submission;
 		}
 
-		if ( ! session_id() ) {
-			session_start();
+		if ( ! $this->is_captcha_correct( $formid ) ) {
+			$submission['errors']['_coolcaptcha'] = mailster_option( 'coolcaptcha_error_msg' );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		$session_var = 'mailster_coolcaptcha_' . $formid;
-
-		if ( empty( $_SESSION[ $session_var ] ) || strtolower( trim( $_REQUEST['mailster__coolcaptcha'] ) ) != $_SESSION[ $session_var ] ) {
-			$object['errors']['_coolcaptcha'] = mailster_option( 'coolcaptcha_error_msg' );
-		} else {
-
-		}
-
-		return $object;
-
+		return $submission;
 	}
 
 	/**
@@ -447,11 +466,31 @@ class MailsterCoolCaptcha {
 			return $errors;
 		}
 
-		$formid = ( isset( $_POST['formid'] ) ) ? intval( $_POST['formid'] ) : 0;
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified by Mailster form submit handler.
+		$formid = isset( $_POST['formid'] ) ? absint( wp_unslash( $_POST['formid'] ) ) : 0;
 
-		if ( ! in_array( $formid, mailster_option( 'coolcaptcha_forms', array() ) ) ) {
+		if ( ! in_array( $formid, array_map( 'intval', (array) mailster_option( 'coolcaptcha_forms', array() ) ), true ) ) {
+			// phpcs:enable WordPress.Security.NonceVerification.Missing
 			return $errors;
 		}
+
+		if ( ! $this->is_captcha_correct( $formid ) ) {
+			$errors['_coolcaptcha'] = mailster_option( 'coolcaptcha_error_msg' );
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		return $errors;
+	}
+
+	/**
+	 * Compares the user captcha input with the value stored in the session.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $formid Mailster form ID.
+	 * @return bool True when the captcha matches, false otherwise.
+	 */
+	private function is_captcha_correct( $formid ) {
 
 		if ( ! session_id() ) {
 			session_start();
@@ -459,15 +498,18 @@ class MailsterCoolCaptcha {
 
 		$session_var = 'mailster_coolcaptcha_' . $formid;
 
-		if ( empty( $_SESSION[ $session_var ] ) || strtolower( trim( $_REQUEST['mailster__coolcaptcha'] ) ) != $_SESSION[ $session_var ] ) {
-			$errors['_coolcaptcha'] = mailster_option( 'coolcaptcha_error_msg' );
-		} else {
-
+		if ( empty( $_SESSION[ $session_var ] ) ) {
+			return false;
 		}
 
-		return $errors;
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Public form field on Mailster submit.
+		$submitted = isset( $_REQUEST['mailster__coolcaptcha'] )
+			? strtolower( trim( sanitize_text_field( wp_unslash( $_REQUEST['mailster__coolcaptcha'] ) ) ) )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
+		$expected = strtolower( sanitize_text_field( (string) $_SESSION[ $session_var ] ) );
+
+		return $expected === $submitted;
 	}
-
-
 }
