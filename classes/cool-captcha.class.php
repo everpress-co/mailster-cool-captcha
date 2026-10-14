@@ -115,7 +115,7 @@ class MailsterCoolCaptcha {
 	/**
 	 * Builds the admin-ajax URL used to render the captcha image.
 	 *
-	 * @since [Unreleased]
+	 * @since 1.4.0
 	 *
 	 * @param int $formid Optional. Mailster form ID. Default 0.
 	 * @return string Captcha image URL.
