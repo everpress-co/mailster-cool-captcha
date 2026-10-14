@@ -3,8 +3,8 @@
 Contributors: everpress, mailster, xaverb  
 Tags: mailster, captcha, newsletter, forms, spam  
 Requires at least: 6.0  
-Tested up to: 6.5  
-Stable tag: 1.3.1  
+Tested up to: 7.1  
+Stable tag: 1.4.0  
 License: GPLv2 or later
 
 Add a self-hosted image captcha to Mailster newsletter signup forms—block bot subscriptions without Google API keys.
@@ -82,7 +82,7 @@ For Mailster and this addon, see [mailster.co](https://mailster.co/?utm_campaign
 
 ## Changelog
 
-### Unreleased
+### 1.4.0
 
 - fixed: captcha image broken on PHP 8.1+ due to deprecation notices in the image generator
 
