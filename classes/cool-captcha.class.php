@@ -1,10 +1,35 @@
 <?php
 
+/**
+ * Integrates Cool Captcha with Mailster forms and settings.
+ *
+ * @since 1.0
+ */
 class MailsterCoolCaptcha {
 
+	/**
+	 * Absolute filesystem path to the plugin directory.
+	 *
+	 * @since 1.0
+	 *
+	 * @var string
+	 */
 	private $plugin_path;
+
+	/**
+	 * URL to the plugin directory.
+	 *
+	 * @since 1.0
+	 *
+	 * @var string
+	 */
 	private $plugin_url;
 
+	/**
+	 * Sets plugin paths and registers activation and init hooks.
+	 *
+	 * @since 1.0
+	 */
 	public function __construct() {
 
 		$this->plugin_path = plugin_dir_path( MAILSTER_COOLCAPTCHA_FILE );
@@ -17,6 +42,14 @@ class MailsterCoolCaptcha {
 		add_action( 'init', array( &$this, 'init' ) );
 	}
 
+	/**
+	 * Seeds default Cool Captcha options on plugin activation.
+	 *
+	 * @since 1.0
+	 *
+	 * @param bool $network_wide Whether the plugin is network-activated.
+	 * @return void
+	 */
 	public function activate( $network_wide ) {
 
 		if ( function_exists( 'mailster' ) ) {
@@ -51,6 +84,13 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * Registers admin settings and front-end captcha hooks.
+	 *
+	 * @since 1.0
+	 *
+	 * @return void
+	 */
 	public function init() {
 
 		if ( is_admin() ) {
@@ -70,12 +110,12 @@ class MailsterCoolCaptcha {
 	}
 
 	/**
-	 * Build captcha image URL.
+	 * Builds the admin-ajax URL used to render the captcha image.
 	 *
 	 * @since [Unreleased]
 	 *
-	 * @param int $formid Form ID.
-	 * @return string
+	 * @param int $formid Optional. Mailster form ID. Default 0.
+	 * @return string Captcha image URL.
 	 */
 	public function get_image_url( $formid = 0 ) {
 
@@ -89,6 +129,14 @@ class MailsterCoolCaptcha {
 		);
 	}
 
+	/**
+	 * Adds the Cool Captcha tab to Mailster settings sections.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $settings Associative array of setting section slugs and labels.
+	 * @return array Modified settings sections.
+	 */
 	public function settings_tab( $settings ) {
 
 		$position = 4;
@@ -99,6 +147,13 @@ class MailsterCoolCaptcha {
 		return $settings;
 	}
 
+	/**
+	 * Outputs the Cool Captcha settings fields markup.
+	 *
+	 * @since 1.0
+	 *
+	 * @return void
+	 */
 	public function settings() {
 
 		?>
@@ -225,6 +280,16 @@ class MailsterCoolCaptcha {
 		<?php
 	}
 
+	/**
+	 * Injects the captcha field into enabled Mailster forms.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $fields Form field definitions.
+	 * @param int   $formid Mailster form ID.
+	 * @param array $form   Form configuration.
+	 * @return array Modified form fields.
+	 */
 	public function form_fields( $fields, $formid, $form ) {
 
 		if ( is_user_logged_in() && mailster_option( 'coolcaptcha_loggedin' ) ) {
@@ -247,9 +312,11 @@ class MailsterCoolCaptcha {
 	}
 
 	/**
-	 * AJAX handler: output captcha image and exit.
+	 * AJAX handler that renders the captcha image and terminates the request.
 	 *
-	 * @since [Unreleased]
+	 * @since 1.0
+	 *
+	 * @return void
 	 */
 	public function coolcaptcha_img() {
 
@@ -290,6 +357,16 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * Returns HTML markup for the captcha image and input field.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $html   Form configuration (legacy parameter name).
+	 * @param int   $formid Mailster form ID.
+	 * @param array $form   Form configuration.
+	 * @return string Captcha field HTML.
+	 */
 	public function get_field( $html, $formid, $form ) {
 
 		$form = (object) $form;
@@ -320,6 +397,14 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * Validates the captcha on Mailster form submit (v2 submit payload).
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $object Submit data including errors array.
+	 * @return array Submit data with captcha error when validation fails.
+	 */
 	public function check_captcha( $object ) {
 
 		if ( is_user_logged_in() && mailster_option( 'coolcaptcha_loggedin' ) ) {
@@ -348,6 +433,14 @@ class MailsterCoolCaptcha {
 
 	}
 
+	/**
+	 * Validates the captcha on Mailster form submit (legacy errors array).
+	 *
+	 * @since 1.1
+	 *
+	 * @param array $errors Existing submit errors.
+	 * @return array Errors with captcha message when validation fails.
+	 */
 	public function check_captcha_v1( $errors ) {
 
 		if ( is_user_logged_in() && mailster_option( 'coolcaptcha_loggedin' ) ) {
