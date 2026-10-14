@@ -13,7 +13,7 @@ jobs:
     name: Update Assets and Readme
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Convert README.md to WordPress readme.txt
         uses: everpress-co/action-md2wp@main
@@ -24,7 +24,7 @@ jobs:
         uses: everpress-co/action-md2wp@main
 
       - name: WordPress.org plugin asset/readme update
-        uses: evrpress/action-wordpress-plugin-asset-update@develop
+        uses: 10up/action-wordpress-plugin-asset-update@develop
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
